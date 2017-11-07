@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#
+# add hosts
+#
+cp /etc/hosts /etc/hosts.bak
+cat etc/newhosts.txt >>/etc/hosts
+
 
 #
 # initial lifting for installing kubernetes - refer to README.md for additional steps required after this first part of the install is completed
@@ -32,12 +38,13 @@ rpm --import "https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc
 #
 # Install the Docker repo
 #
-yum-config-manager --add-repo https://packages.docker.com/1.12/yum/repo/main/centos/7
+#yum-config-manager --add-repo https://packages.docker.com/1.12/yum/repo/main/centos/7
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
 #
-# Install docker-engine 1.12
+# Install docker-ce
 #
-yum install -y docker-engine
+yum install -y docker-ce
 
 #
 # Add centos as a user of docker
@@ -50,17 +57,9 @@ usermod -aG docker centos
 setenforce 0
 
 #
-# Install 1.70 of kubernetes utils.
-# (Note that the current version (as of this writing) 1.71, has a bug which
-# prevents this install from happening.
+# Install kubernetes utils.
 #
-yum install -y kubelet-1.7.0 kubeadm-1.7.0 kubernetes-cni-1.7.0 kubectl-1.7.0
-
-#
-# add hosts
-#
-cp /etc/hosts /etc/hosts.bak
-cat etc/newhosts.txt >>/etc/hosts
+yum install -y kubelet-1.8.2 kubeadm-1.8.2 kubernetes-cni-1.8.2 kubectl-1.8.2
 
 #
 # enable and start docker
