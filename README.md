@@ -1,5 +1,5 @@
 # k8s-scripts
-Initial install of Kubernetes with Flannel
+# Initial install of Kubernetes with Flannel
 
 The following installs Kubernetes 1.8.3
 
@@ -14,7 +14,7 @@ Including:
 
 
 
-ON THE HEAD NODE
+## On the head node
 
 Clone the repository at github.com/lsst-dm/k8s-scripts.git
 Enter the k8s-scripts directory
@@ -24,7 +24,7 @@ process.
 
 Copy the k8s-scripts directory to all the rest of the nodes onto which you’ll be installing Kubernetes.
 
-ON ALL MACHINES IN THE CLUSTER
+## On all machines in the cluster
 
 Execute the command:
 
@@ -32,9 +32,9 @@ Execute the command:
 
 This will execute a series of commands to append the hosts to the /etc/hosts file, update the operating system, and to install docker and the Kubernetes software.  This will take a few minutes to install.
 
-AFTER PREPARE.SH IS FINISHED -
+## On the Head node
 
-On the Head node, execute the following:
+Execute the following:
 
 
 `sh-4.2# kubeadm init --pod-network-cidr=10.244.0.0/16`
@@ -106,12 +106,15 @@ $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 
-ON ALL WORKER NODES, execute the “kubeadm join” line listed as the last part of the “kubeadm init” command that ran on the head node.  In the example above, run the following on each worker node:
+## ON ALL WORKER NODES
+
+Execute the “kubeadm join” line listed as the last part of the “kubeadm init” command that ran on the head node.  In the example above, run the following on each worker node:
 
 `kubeadm join --token 59f95a.3c3f1d22a35f24df 172.16.1.102:6443 --discovery-token-ca-cert-hash sha256:9a3893600d1206d3a51b6988fd31bab1d79523c8cb1b50973cec6ae1397c44e9`
 
 
-From the head node, 
+## From the head node,
+
 Check the cluster node status by running:
 
 `$ kubectl get nodes`
@@ -119,7 +122,7 @@ Check the cluster node status by running:
 This should list all nodes you’ve installed the software on.
 
 
-Apply the Flannel network layer:
+# Apply the Flannel network layer:
 
 `$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml`
 
@@ -152,15 +155,13 @@ kube-scheduler-srp-manager.os.ncsa.edu            1/1       Running   0         
 
 --------
 
-LOCAL DOCKER REGISTRY DEPLOYMENT
+# Local docker registry deploymenT
 
-REGISTRY PASSWORD
-
-Install httpd-tools to get htpasswd
+## Install httpd-tools to get htpasswd
 
 `$ yum install -y httpd-tools`
 
-Create htpasswd
+## Create htpasswd
 
 `$ htpasswd -c htpasswd centos`
 
@@ -168,39 +169,41 @@ Login to local registry
 
 `$ kubectl --namespace=kube-system create secret generic registry-auth-secret --from-file=htpasswd=htpasswd`
 
-ON HEAD NODE:
+## On head node:
 
 `$ kubectl create -f yml/registry.yml`
 
 `$ POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' | grep Running | head -1 | cut -f1 -d' ')`
+
 `$ nohup kubectl port-forward --namespace kube-system $POD 5000:5000 &`
 
 
-FOR EACH NODE IN THE CLUSTER, FROM THE HEAD NODE: 
+## For each node in the cluster, from the head node: 
 `$ scp /etc/kubernetes/admin.conf node-name-goes-here:.kube/config`
 
-ON EACH WORKER NODE:
+## On each worker node:
 
 `$ kubectl create -f yml/node-redirect.yml`
 
 `$ POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' | grep Running | head -1 | cut -f1 -d' ')`
+
 `$ nohup kubectl port-forward --namespace kube-system $POD 5000:5000 &`
 
 To test:
 
-# pull down an image from dockerhub
+### Pull down an image from dockerhub
 `$ docker pull srp3/stack:v5`
 
-# tag it
+### Tag it
 `$ docker tag srp3/stack:v5 localhost:5000/stack6`
 
-# push the tagged version to the local registry
+### Push the tagged version to the local registry
 `$ docker push localhost:5000/stack6`
 
-# remove the tagged version
+### Remove the tagged version
 `$ docker rmi localhost:5000/stack6`
 
-# removed the image pulled from dockerhub
+### Remove the image pulled from dockerhub
 `$ docker rmi srp3/stack:v5`
 
 Pod should now be available through local docker registry.
