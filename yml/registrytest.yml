@@ -1,0 +1,10 @@
+# example
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mystack6
+spec:
+  containers:
+  - name: mystack6
+    image: localhost:5000/stack6
+    command: [ 'sh', '-c', 'echo app is running && sleep 3600' ]

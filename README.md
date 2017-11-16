@@ -9,7 +9,7 @@ Including:
 
     1.  bin/prepare.sh - install script for first part of the install
     2.  etc/newhosts.txt - will be appended to /etc/hosts on each system
-    3.  yml/registry.yml - used to create local docker registry on master
+    3.  yml/registry.yml - used to create local docker registry on head node
     4.  yml/node-redirect.yml - used on nodes to for the registry 
 
 
@@ -145,3 +145,68 @@ kube-proxy-f59mq                                  1/1       Running   0         
 kube-proxy-fhldr                                  1/1       Running   0          1h
 kube-proxy-g8g2p                                  1/1       Running   0          46m
 kube-scheduler-srp-manager.os.ncsa.edu            1/1       Running   0          1h
+
+--------
+
+LOCAL DOCKER REGISTRY DEPLOYMENT
+
+REGISTRY PASSWORD
+
+Install httpd-tools to get htpasswd
+
+$ yum install -y httpd-tools 
+
+Create htpasswd
+
+$ htpasswd -c htpasswd centos
+
+Login to local registry
+
+$  kubectl --namespace=kube-system create secret generic registry-auth-secret --from-file=htpasswd=htpasswd
+
+ON HEAD NODE:
+
+$ kubectl create -f yml/registry.yml
+
+$ POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' | grep Running | head -1 | cut -f1 -d' ')
+$ kubectl port-forward --namespace kube-system $POD 5000:5000 &
+
+
+FOR EACH NODE IN THE CLUSTER, FROM THE HEAD NODE: 
+$ scp /etc/kubernetes/admin.conf node-name-goes-here:.kube/config
+
+ON EACH WORKER NODE:
+
+$ kubectl create -f yml/node-redirect.yml
+
+$ POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' | grep Running | head -1 | cut -f1 -d' ')
+$ kubectl port-forward --namespace kube-system $POD 5000:5000 &
+
+To test:
+
+# pull down an image from dockerhub
+$ docker pull srp3/stack:v5
+
+# tag it
+$ docker tag srp3/stack:v5 localhost:5000/stack6
+
+# push the tagged version to the local registry
+$ docker push localhost:5000/stack6
+
+# remove the tagged version
+$ docker rmi localhost:5000/stack6
+
+# removed the image pulled from dockerhub
+$ docker rmi srp3/stack:v5
+
+Pod should now be available through local docker registry.
+
+Pods should now be able to be deployed, referencing the local registry.
+
+Try running the following command using the file in the yml directory:
+
+$ kubectl create -f registrytest.yml
+
+$ kubectl exec -it mystack6 /bin/bash
+
+and you should log into that container.
