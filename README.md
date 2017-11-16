@@ -41,7 +41,7 @@ sh-4.2# kubeadm init --pod-network-cidr=10.244.0.0/16
 
 This will give output similar to this:
 
-
+```
 [kubeadm] WARNING: kubeadm is in beta, please do not use it for production clusters.
 [init] Using Kubernetes version: v1.8.3
 [init] Using Authorization modes: [Node RBAC]
@@ -94,7 +94,7 @@ You can now join any number of machines by running the following on each node
 as root:
 
   kubeadm join --token 59f95a.3c3f1d22a35f24df 172.16.1.102:6443 --discovery-token-ca-cert-hash sha256:9a3893600d1206d3a51b6988fd31bab1d79523c8cb1b50973cec6ae1397c44e9 
-
+```
 
 
 Take note of the final output of “kubeadm init”, and execute the following as a non-root user:
