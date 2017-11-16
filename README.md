@@ -1,5 +1,5 @@
 # k8s-scripts
-# Initial install of Kubernetes with Flannel
+# Install of Kubernetes with Flannel on OpenStack
 
 The following installs Kubernetes 1.8.3
 
@@ -11,7 +11,7 @@ Including:
     2.  etc/newhosts.txt - will be appended to /etc/hosts on each system
     3.  yml/registry.yml - used to create local docker registry on head node
     4.  yml/node-redirect.yml - used on nodes to for the registry 
-
+    5.  yml/testregistry.yml - YML for pod used to check to see the local registry is working
 
 
 ## On the head node
@@ -35,7 +35,6 @@ This will execute a series of commands to append the hosts to the /etc/hosts fil
 ## On the Head node
 
 Execute the following:
-
 
 `sh-4.2# kubeadm init --pod-network-cidr=10.244.0.0/16`
 
@@ -106,7 +105,7 @@ $ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 
-## ON ALL WORKER NODES
+## On all worker nodes
 
 Execute the “kubeadm join” line listed as the last part of the “kubeadm init” command that ran on the head node.  In the example above, run the following on each worker node:
 
@@ -155,7 +154,7 @@ kube-scheduler-srp-manager.os.ncsa.edu            1/1       Running   0         
 
 --------
 
-# Local docker registry deploymenT
+# Local docker registry deployment
 
 ## Install httpd-tools to get htpasswd
 
