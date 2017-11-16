@@ -134,7 +134,7 @@ Check to see all pods are running
 
 You should see something like:
 
-````
+```
 $ kubectl get pods --namespace kube-system
 NAME                                              READY     STATUS    RESTARTS   AGE
 etcd-srp-manager.os.ncsa.edu                      1/1       Running   0          1h
