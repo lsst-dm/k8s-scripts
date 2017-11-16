@@ -28,7 +28,7 @@ ON ALL MACHINES IN THE CLUSTER
 
 Execute the command:
 
-bin/prepare.sh 
+`$ bin/prepare.sh`
 
 This will execute a series of commands to append the hosts to the /etc/hosts file, update the operating system, and to install docker and the Kubernetes software.  This will take a few minutes to install.
 
@@ -37,7 +37,7 @@ AFTER PREPARE.SH IS FINISHED -
 On the Head node, execute the following:
 
 
-sh-4.2# kubeadm init --pod-network-cidr=10.244.0.0/16
+`sh-4.2# kubeadm init --pod-network-cidr=10.244.0.0/16`
 
 This will give output similar to this:
 
@@ -99,39 +99,42 @@ as root:
 
 Take note of the final output of “kubeadm init”, and execute the following as a non-root user:
 
-  mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
+$ mkdir -p $HOME/.kube
+$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+```
 
 
 ON ALL WORKER NODES, execute the “kubeadm join” line listed as the last part of the “kubeadm init” command that ran on the head node.  In the example above, run the following on each worker node:
 
-kubeadm join --token 59f95a.3c3f1d22a35f24df 172.16.1.102:6443 --discovery-token-ca-cert-hash sha256:9a3893600d1206d3a51b6988fd31bab1d79523c8cb1b50973cec6ae1397c44e9
+`kubeadm join --token 59f95a.3c3f1d22a35f24df 172.16.1.102:6443 --discovery-token-ca-cert-hash sha256:9a3893600d1206d3a51b6988fd31bab1d79523c8cb1b50973cec6ae1397c44e9`
 
 
 From the head node, 
 Check the cluster node status by running:
 
-$ kubectl get nodes
+`$ kubectl get nodes`
 
 This should list all nodes you’ve installed the software on.
 
 
 Apply the Flannel network layer:
 
-$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+`$ kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml`
 
 Check the cluster node status, and wait for all nodes to be in the “Ready” state.
 
-$ kubectl get nodes
+`$ kubectl get nodes`
 
 
 Check to see all pods are running
 
-$  kubectl get pods --namespace kube-system
+`$ kubectl get pods --namespace kube-system`
 
 You should see something like:
 
+````
 $ kubectl get pods --namespace kube-system
 NAME                                              READY     STATUS    RESTARTS   AGE
 etcd-srp-manager.os.ncsa.edu                      1/1       Running   0          1h
@@ -145,6 +148,7 @@ kube-proxy-f59mq                                  1/1       Running   0         
 kube-proxy-fhldr                                  1/1       Running   0          1h
 kube-proxy-g8g2p                                  1/1       Running   0          46m
 kube-scheduler-srp-manager.os.ncsa.edu            1/1       Running   0          1h
+```
 
 --------
 
@@ -154,50 +158,50 @@ REGISTRY PASSWORD
 
 Install httpd-tools to get htpasswd
 
-$ yum install -y httpd-tools 
+`$ yum install -y httpd-tools`
 
 Create htpasswd
 
-$ htpasswd -c htpasswd centos
+`$ htpasswd -c htpasswd centos`
 
 Login to local registry
 
-$  kubectl --namespace=kube-system create secret generic registry-auth-secret --from-file=htpasswd=htpasswd
+`$ kubectl --namespace=kube-system create secret generic registry-auth-secret --from-file=htpasswd=htpasswd`
 
 ON HEAD NODE:
 
-$ kubectl create -f yml/registry.yml
+`$ kubectl create -f yml/registry.yml`
 
-$ POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' | grep Running | head -1 | cut -f1 -d' ')
-$ kubectl port-forward --namespace kube-system $POD 5000:5000 &
+`$ POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' | grep Running | head -1 | cut -f1 -d' ')`
+`$ nohup kubectl port-forward --namespace kube-system $POD 5000:5000 &`
 
 
 FOR EACH NODE IN THE CLUSTER, FROM THE HEAD NODE: 
-$ scp /etc/kubernetes/admin.conf node-name-goes-here:.kube/config
+`$ scp /etc/kubernetes/admin.conf node-name-goes-here:.kube/config`
 
 ON EACH WORKER NODE:
 
-$ kubectl create -f yml/node-redirect.yml
+`$ kubectl create -f yml/node-redirect.yml`
 
-$ POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' | grep Running | head -1 | cut -f1 -d' ')
-$ kubectl port-forward --namespace kube-system $POD 5000:5000 &
+`$ POD=$(kubectl get pods --namespace kube-system -l k8s-app=kube-registry-upstream -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' | grep Running | head -1 | cut -f1 -d' ')`
+`$ nohup kubectl port-forward --namespace kube-system $POD 5000:5000 &`
 
 To test:
 
 # pull down an image from dockerhub
-$ docker pull srp3/stack:v5
+`$ docker pull srp3/stack:v5`
 
 # tag it
-$ docker tag srp3/stack:v5 localhost:5000/stack6
+`$ docker tag srp3/stack:v5 localhost:5000/stack6`
 
 # push the tagged version to the local registry
-$ docker push localhost:5000/stack6
+`$ docker push localhost:5000/stack6`
 
 # remove the tagged version
-$ docker rmi localhost:5000/stack6
+`$ docker rmi localhost:5000/stack6`
 
 # removed the image pulled from dockerhub
-$ docker rmi srp3/stack:v5
+`$ docker rmi srp3/stack:v5`
 
 Pod should now be available through local docker registry.
 
@@ -205,8 +209,8 @@ Pods should now be able to be deployed, referencing the local registry.
 
 Try running the following command using the file in the yml directory:
 
-$ kubectl create -f registrytest.yml
+`$ kubectl create -f registrytest.yml`
 
-$ kubectl exec -it mystack6 /bin/bash
+`$ kubectl exec -it mystack6 /bin/bash`
 
 and you should log into that container.
