@@ -42,9 +42,9 @@ rpm --import "https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
 #
-# Install docker-ce
+# Install docker
 #
-yum install -y docker-ce
+yum install -y docker
 
 #
 # Add centos as a user of docker
