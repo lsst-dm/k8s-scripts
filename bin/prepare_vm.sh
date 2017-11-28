@@ -80,7 +80,7 @@ q
 #
 # add option to turn off swap warning.
 #
-printf '%s\n' 2i "KUBELET_EXTRA_ARGS=--fail-swap-on=false" . x | ex $KUBEADM_CONF
+printf '%s\n' 2i 'Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"' . x | ex $KUBEADM_CONF
 
 #
 # enable and start kubelet
