@@ -1,13 +1,6 @@
 #!/bin/bash
 
 #
-# add hosts
-#
-cp /etc/hosts /etc/hosts.bak
-cat etc/newhosts.txt >>/etc/hosts
-
-
-#
 # initial lifting for installing kubernetes - refer to README.md for additional steps required after this first part of the install is completed
 #
 
@@ -38,8 +31,7 @@ rpm --import "https://sks-keyservers.net/pks/lookup?op=get&search=0xee6d536cf7dc
 #
 # Install the Docker repo
 #
-#yum-config-manager --add-repo https://packages.docker.com/1.12/yum/repo/main/centos/7
-yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum-config-manager --add-repo https://packages.docker.com/1.12/yum/repo/main/centos/7
 
 #
 # Install docker
@@ -49,7 +41,7 @@ yum install -y docker
 #
 # Add centos as a user of docker
 #
-usermod -aG docker centos
+#usermod -aG docker centos
 
 #
 # Turn off enforcement
@@ -59,7 +51,7 @@ setenforce 0
 #
 # Install kubernetes utils.
 #
-yum install -y kubelet-1.8.4 kubeadm-1.8.4 kubectl-1.8.4
+yum install -y kubelet-1.8.3 kubeadm-1.8.3 kubectl-1.8.3
 
 #
 # enable and start docker
@@ -83,7 +75,7 @@ q
 printf '%s\n' 2i 'Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"' . x | ex $KUBEADM_CONF
 
 #
-# enable and start kubelet
+# enable and start kubelet - this will get errors on the master until the "kubeadm init" is executed (which is done after you run this script)
 #
 systemctl enable kubelet
 systemctl start kubelet
