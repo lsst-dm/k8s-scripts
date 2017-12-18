@@ -3,8 +3,8 @@
 #
 # add hosts
 #
-cp /etc/hosts /etc/hosts.bak
-cat etc/newhosts.txt >>/etc/hosts
+#cp /etc/hosts /etc/hosts.bak
+#cat etc/newhosts.txt >>/etc/hosts
 
 
 #
@@ -71,9 +71,15 @@ systemctl start docker
 #
 # change systemd to cgroupfs
 #
+KUBEADM_CONF=/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 cp /etc/systemd/system/kubelet.service.d/10-kubeadm.conf /etc/systemd/system/kubelet.service.d/10-kubeadm.conf.bak
 
-sed 's/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs/' < /etc/systemd/system/kubelet.service.d/10-kubeadm.conf.bak > /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+sed 's/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs/' < /etc/systemd/system/kubelet.service.d/10-kubeadm.conf.bak > $KUBEADM_CONF
+
+#
+# add option to turn off swap warning.
+#
+printf '%s\n' 2i 'Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"' . x | ex $KUBEADM_CONF
 
 #
 # enable and start kubelet
