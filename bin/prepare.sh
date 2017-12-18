@@ -59,7 +59,7 @@ setenforce 0
 #
 # Install kubernetes utils.
 #
-yum install -y kubelet-1.8.3 kubeadm-1.8.3 kubectl-1.8.3
+yum install -y kubelet-1.8.5 kubeadm-1.8.5 kubectl-1.8.5
 
 #
 # enable and start docker
