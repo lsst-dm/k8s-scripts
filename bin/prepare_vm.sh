@@ -49,7 +49,7 @@ yum install -y docker-ce
 #
 # Add centos as a user of docker
 #
-usermod -aG docker centos
+#usermod -aG docker centos
 
 #
 # Turn off enforcement
@@ -59,7 +59,9 @@ setenforce 0
 #
 # Install kubernetes utils.
 #
-yum install -y kubelet-1.8.5 kubeadm-1.8.5 kubectl-1.8.5
+yum install -y kubelet-1.8.5
+yum install -y kubectl-1.8.5
+yum install -y kubeadm-1.8.5
 
 #
 # enable and start docker
