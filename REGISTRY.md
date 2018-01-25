@@ -1,6 +1,8 @@
 # k8s-scripts
 # Local docker registry deployment
 
+# (note: this is still being tested!)
+
 ## Install httpd-tools to get htpasswd
 
 `$ yum install -y httpd-tools`
