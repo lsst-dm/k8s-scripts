@@ -1,4 +1,0 @@
-# add all ips & hosts here
-172.16.1.122 manager1
-172.16.1.123 node-1
-172.16.1.125 node-2

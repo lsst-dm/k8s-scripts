@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# initial lifting for installing kubernetes - refer to README.md for additional steps required after this first part of the install is completed
+# initial lifting for installing latest kubernetes - refer to README.md for additional steps required after this first part of the install is completed
 #
 
 #
