@@ -1,14 +1,10 @@
 # k8s-scripts
-# Install of Kubernetes with Flannel on OpenStack
+# Install of Kubernetes with Weave
 
-The following installs the latesting version of Kubernetes, which at the time of this writing is version 1.9.2
+The following describes how to install Kubernetes.
 
-Files are available in the http://www.github.com/lsst-dm/k8s-scripts.git
 
-Including:
-
-    1.  bin/prepare.sh - install script for first part of the install
-
+A pre-install script is available in the http://www.github.com/lsst-dm/k8s-scripts.git
 
 ## On all nodes of the clusters, execute the following:
 
@@ -16,9 +12,12 @@ Including:
 2) Enter the k8s-scripts directory
 3) As root, execute the command:
 
-`# bin/prepare_vm.sh`
+`# bin/prepare.sh <version>`
 
-This will execute a series of commands to update the operating system, and to install docker and the Kubernetes software.  This will take a few minutes to install.
+where <version> is the version of Kubernetes you wish to install.
+
+This will execute a series of commands to update the operating system, install required YUM repos, and to install docker and the Kubernetes software.  This will 
+take a few minutes to install.
 
 ## On the Head node
 
@@ -26,8 +25,8 @@ Execute the following:
 
 `# kubeadm init`
 
-You may get an error when trying to execute this command on a node with Swap enabled.  If you don't wish to disable Swap on your system, but still which to continue
-with the install, execute the following command:
+In later versions of Kubernetes (> 1.9.x) You may get an error when trying to execute this command on a node with Swap enabled.  
+If you don't wish to disable Swap on your system, but still wish to continue with the install, execute the following command:
 
 `# kubeadm init --ignore-preflight-checks Swap`
 
@@ -89,8 +88,8 @@ as root:
 #
 ```
 
-Please note that the line "[init] Using Kubernetes version: 1.9.2" (this number may vary).   The "version: 1.9.2" refers to the control plane binaries for Kubernetes 
-which, by default, will always install the "stable" vesion of the 1.x release you're using.  In this case, the client binaries are running 1.9.2, and the control plan binaries
+Please note that the line "[init] Using Kubernetes version: 1.9.2".   The "version: 1.9.2" refers to the control plane binaries for Kubernetes which, by default, will 
+always install the "stable" vesion of the 1.x release you're using.  In this case, the client binaries are running 1.9.2, and the control plan binaries
 also run as 1.9.2.  If client libraries from 1.9.1 were installed, you'd get the same "1.9.2" message about the control plane binaries.  To change this default behavior,
 Add "--kubernetes-version string", replace "string" with the version of the control backplane you wish to run.
 
