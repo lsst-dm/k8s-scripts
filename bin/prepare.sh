@@ -49,14 +49,11 @@ yum install -y kubelet-$version kubeadm-$version kubectl-$version
 
 # add swap flag, since we're running on a system with swap enabled....
 
-#
-# change systemd to cgroupfs
-#
-KUBEADM_CONF=/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 #
-# add option to turn off swap warning.
+# add option to turn off swap warning (works for Kubernetes versions < 1.9)
 #
+KUBEADM_CONF=/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 printf '%s\n' 2i 'Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"' . x | ex $KUBEADM_CONF
 
 #
