@@ -54,7 +54,7 @@ yum install -y kubelet-$version kubeadm-$version kubectl-$version
 # add option to turn off swap warning (works for Kubernetes versions < 1.9)
 #
 KUBEADM_CONF=/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-printf '%s\n' 2i 'Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false"' . x | ex $KUBEADM_CONF
+printf '%s\n' 2i 'Environment="KUBELET_EXTRA_ARGS=--fail-swap-on=false --runtime-cgroups=/systemd/system.slice --kubelet-cgroups=/systemd/system.slice"' . x | ex $KUBEADM_CONF
 
 #
 # enable and start kubelet
